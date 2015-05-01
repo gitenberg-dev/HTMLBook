@@ -222,7 +222,7 @@ UbuntuMono-Italic.otf</xsl:param>
   <xsl:param name="html4.structural.elements" select="1"/>
 
   <!-- Do default to turning on autolabeling for EPUB, as some older ereaders may not support the necessary CSS -->
-  <xsl:param name="autogenerate.labels" select="1"/>
+  <xsl:param name="autogenerate.labels" select="0"/>
 
   <xsl:variable name="full.cover.filename">
     <xsl:value-of select="$outputdir"/>
