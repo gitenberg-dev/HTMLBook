@@ -1440,18 +1440,30 @@ sect5:1
       <p>This is the text<span id="fn_id_yo" data-type="footnote">And this is the footnote</span></p>
     </x:context>
     
-    <x:scenario label="With process.footnotes disabled">
+    <x:scenario label="With process.footnotes disabled and process.footnote.callouts.only disabled">
       <x:context>
 	<x:param name="process.footnotes" select="0"/>
+	<x:param name="process.footnote.callouts.only" select="0"/>
       </x:context>
       <x:expect label="Footnote should be copied to output as is">
-	<span data-type="footnote" id="fn_id_yo">And this is the footnote</span>
+	<span data-type="footnote" id="fn_id_yo" data-footnote-marker="...">And this is the footnote</span>
+      </x:expect>
+    </x:scenario>
+
+    <x:scenario label="With process.footnotes disabled and process.footnote.callouts.only enabled">
+      <x:context>
+	<x:param name="process.footnotes" select="0"/>
+	<x:param name="process.footnote.callouts.only" select="1"/>
+      </x:context>
+      <x:expect label="Footnote callout should be generated and followed by footnote copied to output as is">
+	<sup><a data-type="noteref" id="fn_id_yo-marker" href="#fn_id_yo">1</a></sup><span data-type="footnote" id="fn_id_yo" data-footnote-marker="...">And this is the footnote</span>
       </x:expect>
     </x:scenario>
 
     <x:scenario label="With process.footnotes enabled">
       <x:context>
 	<x:param name="process.footnotes" select="1"/>
+	<x:param name="process.footnote.callouts.only" select="0"/>
       </x:context>
       <x:expect label="Footnote should be processed to a noteref">
 	<sup>
@@ -1496,9 +1508,56 @@ sect5:1
       </section>
     </x:context>
 
+    <x:scenario label="With process footnotes disabled and footnote.reset.numbering.at.chapter.level disabled">
+      <x:context select="(/h:section[@id='second_ch']//h:span[@data-type='footnote'])[2]">
+	<x:param name="process.footnotes" select="0"/>
+	<x:param name="process.footnote.callouts.only" select="0"/>
+	<x:param name="footnote.reset.numbering.at.chapter.level" select="0"/>
+      </x:context>
+      <x:expect label="Footnote should be postprocessed with the proper data-footnote-marker attribute">
+	<span data-footnote-marker="4" data-type="footnote">Footnote #2 in Chapter #2</span>
+      </x:expect>
+    </x:scenario>
+
+    <x:scenario label="With process footnotes disabled and footnote.reset.numbering.at.chapter.level enabled">
+      <x:context select="(/h:section[@id='second_ch']//h:span[@data-type='footnote'])[2]">
+	<x:param name="process.footnotes" select="0"/>
+	<x:param name="process.footnote.callouts.only" select="0"/>
+	<x:param name="footnote.reset.numbering.at.chapter.level" select="1"/>
+      </x:context>
+      <x:expect label="Footnote should be postprocessed with the proper data-footnote-marker attribute">
+	<span data-footnote-marker="2" data-type="footnote">Footnote #2 in Chapter #2</span>
+      </x:expect>
+    </x:scenario>
+
+    <x:scenario label="With process footnotes disabled, process.footnote.callouts.only enabled, and footnote.reset.numbering.at.chapter.level disabled">
+      <x:context select="(/h:section[@id='second_ch']//h:span[@data-type='footnote'])[2]">
+	<x:param name="process.footnotes" select="0"/>
+	<x:param name="process.footnote.callouts.only" select="1"/>
+	<x:param name="footnote.reset.numbering.at.chapter.level" select="0"/>
+      </x:context>
+      <x:expect label="Footnote should be postprocessed with the proper data-footnote-marker attribute">
+	<sup><a id="..." data-type="noteref" href="...">4</a></sup><span id="..." data-footnote-marker="4" data-type="footnote">Footnote #2 in Chapter #2</span>
+      </x:expect>
+      <x:expect label="Footnote call href should match footnote id" test="substring-after(//h:a[@data-type='noteref'][1]/@href, '#') = /h:span[@data-type='footnote'][1]/@id"/>
+    </x:scenario>
+
+    <x:scenario label="With process footnotes disabled, process.footnote.callouts.only enabled, and footnote.reset.numbering.at.chapter.level enabled">
+      <x:context select="(/h:section[@id='second_ch']//h:span[@data-type='footnote'])[2]">
+	<x:param name="process.footnotes" select="0"/>
+	<x:param name="process.footnote.callouts.only" select="1"/>
+	<x:param name="footnote.reset.numbering.at.chapter.level" select="1"/>
+      </x:context>
+      <x:expect label="Footnote should be postprocessed with the proper data-footnote-marker attribute">
+	<sup><a id="..." data-type="noteref" href="...">2</a></sup><span id="..." data-footnote-marker="2" data-type="footnote">Footnote #2 in Chapter #2</span>
+      </x:expect>
+      <x:expect label="Footnote call href should match footnote id" test="substring-after(//h:a[@data-type='noteref'][1]/@href, '#') = /h:span[@data-type='footnote'][1]/@id"/>
+    </x:scenario>
+
     <x:scenario label="With process footnotes enabled and footnote.reset.numbering.at.chapter.level disabled">
       <x:context select="(/h:section[@id='second_ch']//h:span[@data-type='footnote'])[2]">
 	<x:param name="process.footnotes" select="1"/>
+	<x:param name="process.footnote.callouts.only" select="0"/>
 	<x:param name="footnote.reset.numbering.at.chapter.level" select="0"/>
       </x:context>
       <x:expect label="Footnote should be processed to a noteref with proper number">
@@ -1511,6 +1570,7 @@ sect5:1
     <x:scenario label="With process footnotes enabled and footnote.reset.numbering.at.chapter.level enabled">
       <x:context select="(/h:section[@id='second_ch']//h:span[@data-type='footnote'])[2]">
 	<x:param name="process.footnotes" select="1"/>
+	<x:param name="process.footnote.callouts.only" select="0"/>
 	<x:param name="footnote.reset.numbering.at.chapter.level" select="1"/>
       </x:context>
       <x:expect label="Footnote should be processed to a noteref with proper number">
@@ -1523,6 +1583,7 @@ sect5:1
     <x:scenario label="With process footnotes enabled and footnote.reset.numbering.at.chapter.level disabled (end-of-section footnote paras)">
       <x:context select="(/h:section[@id='second_ch']//h:span[@data-type='footnote'])[2]" mode="generate.footnote">
 	<x:param name="process.footnotes" select="1"/>
+	<x:param name="process.footnote.callouts.only" select="0"/>
 	<x:param name="footnote.reset.numbering.at.chapter.level" select="0"/>
       </x:context>
       <x:expect label="Footnote should be processed to a para with anchor and proper number">
@@ -1534,6 +1595,7 @@ sect5:1
     <x:scenario label="With process footnotes enabled and footnote.reset.numbering.at.chapter.level enabled (end-of-section footnote paras)">
       <x:context select="(/h:section[@id='second_ch']//h:span[@data-type='footnote'])[2]" mode="generate.footnote">
 	<x:param name="process.footnotes" select="1"/>
+	<x:param name="process.footnote.callouts.only" select="0"/>
 	<x:param name="footnote.reset.numbering.at.chapter.level" select="1"/>
       </x:context>
       <x:expect label="Footnote should be processed to a para with anchor and proper number">
@@ -1645,6 +1707,7 @@ sect5:1
       <p>And now we've got a second paragraph that has a footnoteref here<a data-type="footnoteref" href="#best_footnote_ever"/></p>
     </x:context>
     
+
     <x:scenario label="With process.footnotes disabled">
       <x:context>
 	<x:param name="process.footnotes" select="0"/>
@@ -1688,12 +1751,12 @@ sect5:1
       </table>
     </x:context>
 
-    <x:expect label="Footnotes should be added to a tfoot section at the end of table">
+    <x:expect label="Footnotes should be added to a tbody section at end of table">
       <table>
 	<caption>...</caption>
 	<tbody>...</tbody>
-	<tfoot class="footnotes">
-	  <tr>
+	<tbody>
+	  <tr class="footnotes">
 	    <td colspan="2">
 	      <p data-type="footnote" id="tf1"><sup><a href="#tf1-marker">a</a></sup> Reddish</p>
 	      <p data-type="footnote" id="tf2"><sup><a href="#tf2-marker">b</a></sup> Bluish</p>
@@ -1701,7 +1764,7 @@ sect5:1
 	      <p data-type="footnote" id="tf4"><sup><a href="#tf4-marker">d</a></sup> Purplish</p>
 	    </td>
 	  </tr>
-	</tfoot>
+	</tbody>
       </table>
     </x:expect>
 
@@ -1732,6 +1795,44 @@ sect5:1
     </x:scenario>
   </x:scenario>
 
+  <!-- Additional table footnote placement tests for different table source markup -->
+  <x:scenario label="When a table with footnotes is matched (no tbody)">
+    <x:context>
+      <table>
+	<caption>Four colors</caption>
+	<tr>
+	  <td>Vermillion<span id="tf1" data-type="footnote">Reddish</span></td>
+	  <td>Cerulean<span id="tf2" data-type="footnote">Bluish</span></td>
+	</tr>
+	<tr>
+	  <td>Chartreuse<span id="tf3" data-type="footnote">Greenish</span></td>
+	  <td>Fuschia<span id="tf4" data-type="footnote">Purplish</span></td>
+	</tr>
+	<tr>
+	  <td>Teal<a data-type="footnoteref" href="#tf3"/></td>
+	  <td>Eggplant<a data-type="footnoteref" href="#tf4"/></td>
+	</tr>
+      </table>
+    </x:context>
+
+    <x:expect label="Footnotes should be added to a tr at the end of the table">
+      <table>
+	<caption>...</caption>
+	<tr>...</tr>
+	<tr>...</tr>
+	<tr>...</tr>
+	<tr class="footnotes">
+	  <td colspan="2">
+	    <p data-type="footnote" id="tf1"><sup><a href="#tf1-marker">a</a></sup> Reddish</p>
+	    <p data-type="footnote" id="tf2"><sup><a href="#tf2-marker">b</a></sup> Bluish</p>
+	    <p data-type="footnote" id="tf3"><sup><a href="#tf3-marker">c</a></sup> Greenish</p>
+	    <p data-type="footnote" id="tf4"><sup><a href="#tf4-marker">d</a></sup> Purplish</p>
+	  </td>
+	</tr>
+      </table>
+    </x:expect>
+  </x:scenario>
+
   <x:scenario label="When a section is matched that has both footnotes and table footnotes">
     <x:context>
       <section data-type="chapter">
@@ -1758,7 +1859,7 @@ sect5:1
       <x:context>
 	<x:param name="process.footnotes" select="0"/>
       </x:context>
-      <x:expect label="There should be 4 footnotes at end of table" test="count(//h:table//h:tfoot//*[@data-type='footnote']) = 4"/>
+      <x:expect label="There should be 4 footnotes at end of table" test="count(//h:table//h:tr[@class = 'footnotes']//*[@data-type='footnote']) = 4"/>
       <x:expect label="There should be no footnotes at end of section" test="count(//h:section/h:aside//*[@data-type='footnote']) = 0"/>
     </x:scenario>
 
@@ -1766,7 +1867,7 @@ sect5:1
       <x:context>
 	<x:param name="process.footnotes" select="1"/>
       </x:context>
-      <x:expect label="There should be 4 footnotes at end of table" test="count(//h:table//h:tfoot//*[@data-type='footnote']) = 4"/>
+      <x:expect label="There should be 4 footnotes at end of table" test="count(//h:table//h:tr[@class = 'footnotes']//*[@data-type='footnote']) = 4"/>
       <x:expect label="There should be 2 footnotes at end of section" test="count(//h:section/h:aside//*[@data-type='footnote']) = 2"/>
       <x:expect label="Footnotes at end of section should be numbered in sequence" test="every $footnote in (//h:p[@data-type='footnote'][ancestor::h:aside]) satisfies $footnote[count(preceding-sibling::h:p[@data-type='footnote']) + 1 = h:sup/h:a]"/>
     </x:scenario>

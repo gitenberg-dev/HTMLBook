@@ -117,6 +117,9 @@ sect5:none
     -->
   <xsl:param name="toc.section.depth" select="2"/>
 
+  <!-- Param to specify whether or not to include inline markup tagging (e.g., "em", "code") in generated XHTML TOC -->
+  <xsl:param name="inline.markup.in.toc" select="1"/>
+
   <!-- XREF-specific params -->
   <xsl:param name="autogenerate-xrefs" select="1"/>
 
@@ -171,8 +174,11 @@ toc:lower-roman
 
   <!-- Footnote-specific params -->
 
-  <!-- Process footnotes into separate marker/hyperlink and footnote content -->
+  <!-- Process footnotes into separate marker/hyperlink and footnote content, and move to end of sections -->
   <xsl:param name="process.footnotes" select="0"/>
+
+  <!-- Generate hardcoded superscripted markers for footnotes, but don't move footnote contente to end of sections -->
+  <xsl:param name="process.footnote.callouts.only" select="0"/>
 
   <!-- Reset footnote numbering at chapter level elements (children of part or body) -->
   <xsl:param name="footnote.reset.numbering.at.chapter.level" select="1"/>
